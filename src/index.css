@@ -11,3 +11,20 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#items_list{
+  overflow-y: auto;
+  height: 42vh;
+}
+#items_list::-webkit-scrollbar{
+  width: 10px;
+}
+#items_list::-webkit-scrollbar-track{
+  margin: 3vh 0 2vh 0;
+  border-radius: 10px;
+  background-color: rgb(236, 236, 236);
+}
+#items_list::-webkit-scrollbar-thumb{
+  border-radius: 10px;
+  background-color: black;
+}

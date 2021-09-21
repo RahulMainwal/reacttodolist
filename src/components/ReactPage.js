@@ -16,8 +16,10 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import CancelIcon from '@material-ui/icons/Cancel';
-import EditIcon from '@material-ui/icons/Edit';
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 function ReactPage() {
 
   const useStyles = makeStyles((theme) => ({
@@ -65,10 +67,20 @@ function ReactPage() {
   const [description, setDescription] = useState("");
   const [items, setItems] = useState(getDataLC);
   const [isEditItem, setIsEditItem] = useState(null);
+  const [search, setSearch] = useState("");
 
   const add = () => {
     if (!title) {
-      alert("Sorry, You can't add blank data!")
+      toast.error("Sorry, You can't set blank Title!",{
+        position: "top-right",
+autoClose: 5000,
+hideProgressBar: false,
+closeOnClick: true,
+pauseOnHover: true,
+draggable: true,
+progress: undefined,
+theme: 'colored'
+      })
     }
     else if (title && openEditField) {
       setItems(
@@ -80,6 +92,18 @@ function ReactPage() {
         })
       )
       setOpenEditField(false);
+      setTitle("");
+      setDescription("");
+      setSearch("")
+      toast.success(`Your data has updated successful !`,{
+        position: "top-right",
+autoClose: 5000,
+hideProgressBar: false,
+closeOnClick: true,
+pauseOnHover: true,
+draggable: true,
+progress: undefined,
+      })
     }
     else {
       setItems([...items, { "id": new Date().getTime().toString(), "title": title, "description": description }]);
@@ -87,6 +111,17 @@ function ReactPage() {
       setDescription("");
       setOpen(false);
       setOpenEditField(false);
+      setSearch("")
+      toast.success(`Your data has added successful !`,{
+        position: "top-right",
+autoClose: 5000,
+hideProgressBar: false,
+closeOnClick: true,
+pauseOnHover: true,
+draggable: true,
+progress: undefined,
+theme: 'colored'
+      })
     }
   }
   const remove = (id) => {
@@ -95,12 +130,47 @@ function ReactPage() {
         return element.id !== id;
       })
       setItems(updateItems);
+      setSearch("")
+      toast.warn(`Your data has deleted successful !`,{
+        position: "top-right",
+autoClose: 5000,
+hideProgressBar: false,
+closeOnClick: true,
+pauseOnHover: true,
+draggable: true,
+progress: undefined,
+theme: 'colored'
+      })
     }
   }
 
   const DeleteAll = () => {
-    if (window.confirm("Do you want to Delete all item of List?") === true) {
-      setItems([])
+    if(items.length === 0 ){
+      toast.error(`You can't delete all data because data is already Empty !`,{
+        position: "top-right",
+autoClose: 5000,
+hideProgressBar: false,
+closeOnClick: true,
+pauseOnHover: true,
+draggable: true,
+progress: undefined,
+theme: 'colored'
+      })
+    }
+    else{
+      if (window.confirm("Do you want to Delete all item of List?") === true) {
+        setItems([])
+        toast.warn(`Empty data successfull !`,{
+          position: "top-right",
+  autoClose: 5000,
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+  theme: 'colored'
+        })
+      }
     }
   }
 
@@ -135,7 +205,6 @@ function ReactPage() {
     setOpenEditField(false);
   };
 
-
   useEffect(() => {
     localStorage.setItem("LIST", JSON.stringify(items))
   }, [items])
@@ -144,34 +213,70 @@ function ReactPage() {
   return (
     <div>
       <React.Fragment>
+      <ToastContainer />
         <CssBaseline />
         <Paper square className={classes.paper}>
           <Typography className={classes.text} variant="h5" gutterBottom style={{ textAlign: "center" }}>
             Tasks List
           </Typography>
-          <ListItemText style={{ textAlign: "center" }} primary="" secondary="Web deveoper : Rahul Mainwal" />
-          <div style={{ textAlign: "center" }}>
-            <Button onClick={DeleteAll} style={{ width: "20%" }} variant="contained" color="secondary">
+          <ListItemText style={{ textAlign: "center" }} primary="" secondary="Web Developer : Rahul Mainwal" />
+          <br />
+          <div style={{height: "63vh",boxShadow: "1px 2px 10px 10px rgb(236, 234, 234)", borderRadius: "20px", margin: "0 5%",padding: "5vh 2%"}}>
+           <div style={{width: "100%"}}>
+          <div style={{ width: "50%", float: "left",textAlign: "start" }}>
+            <TextField
+            autoComplete="off"
+            variant="outlined"
+              margin="dense"
+              label="Search "
+              type="search"
+              style={{ maxWidth: "100%", minWidth: "30%"}}
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value)
+              }}
+            />
+          </div>
+          <div style={{ width: "50%", float: "right",textAlign: "end", marginTop: "1.3vh" }}>
+            <Button onClick={DeleteAll} style={{ width: "50%" }} variant="contained" color="secondary">
               <DeleteSweepIcon />&nbsp;
             </Button>
           </div>
-          <br />
-          <br />
+          </div>
+          <br/>
+          <br/>
+          <br/>
+          <hr/>
+          <div id="items_list">
           {
-            !items
+            items.length === 0
               ?
-              <></>
+              <div style={{textAlign: "center"}}>
+              <br/>
+              <br/>
+                <h1>Your data will appear here.</h1>
+                <p>Looks like you haven't saved a data yet.</p>
+                <p>Try to saved your data and click "+" button to save.</p>
+              </div>
               :
-              items.map((element, index) => (
-                <div key={element.id} style={{ border: "1px solid black", marginBottom: "2px" }}>
+              items.filter((element) => {
+                if(search === ""){
+                  return element;
+                }
+                else if(Object.values(element).join("").toLowerCase().includes(search.toLowerCase())){
+                  return element;
+                }
+                else{
+                  return null;
+                }
+              }).map((element, index) => (
+                <div key={element.id} style={{ marginBottom: "2px", borderBottom: "2px solid rgb(231, 231, 231)" }}>
                   <React.Fragment>
-                    <ListItem button>
+                    <ListItem>
                       <Typography>{index + 1}</Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                       <ListItemText primary={element.title} secondary={element.description} />
                       &nbsp;&nbsp;&nbsp;
-                      <Button variant="outlined" color="primary" onClick={() => handleClickEditOpen(element.id)}>
-                        <EditIcon />
-                      </Button>
+                        <i className="fas fa-edit" style={{fontSize: "20px"}} onClick={() => handleClickEditOpen(element.id)} />
                       <Dialog
                         open={openEditField}
                         onClose={handleEditClose}
@@ -182,8 +287,8 @@ function ReactPage() {
                         <DialogContent>
                           <TextField
                             autoFocus
+                            autoComplete="off"
                             margin="dense"
-                            id="name"
                             label="Title"
                             type="text"
                             fullWidth
@@ -192,8 +297,8 @@ function ReactPage() {
                           />
                           <br /><br />
                           <TextField
+                          autoComplete="off"
                             margin="dense"
-                            id="name"
                             label="Description"
                             type="text"
                             fullWidth
@@ -210,15 +315,17 @@ function ReactPage() {
                           </Button>
                         </DialogActions>
                       </Dialog>
-                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                       <CancelIcon onClick={() => remove(element.id)} />
                     </ListItem>
                   </React.Fragment>
                 </div>
               ))
           }
+          </div>
+        </div>
         </Paper>
-        <AppBar position="fixed" color="primary" className={classes.appBar}>
+        <AppBar position="fixed" style={{backgroundColor: "black"}} className={classes.appBar}>
           <Toolbar>
             <Fab color="secondary" aria-label="add" className={classes.fabButton} onClick={handleClickOpen}>
               <AddIcon />
@@ -228,9 +335,9 @@ function ReactPage() {
               <DialogContent>
                 <TextField
                   autoFocus
+                  autoComplete="off"
                   margin="dense"
-                  id="name"
-                  label="Title"
+                  placeholder="Title"
                   type="text"
                   fullWidth
                   value={title}
@@ -238,8 +345,8 @@ function ReactPage() {
                 />
                 <br /><br /><br />
                 <TextField
+                autoComplete="off"
                   margin="dense"
-                  id="name"
                   label="Description"
                   type="text"
                   fullWidth
