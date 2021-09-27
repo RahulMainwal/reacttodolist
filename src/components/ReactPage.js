@@ -68,7 +68,6 @@ function ReactPage() {
   const [items, setItems] = useState(getDataLC);
   const [isEditItem, setIsEditItem] = useState(null);
   const [search, setSearch] = useState("");
-
   const add = () => {
     if (!title) {
       toast.error("Sorry, You can't set blank Title!",{
@@ -209,7 +208,6 @@ theme: 'colored'
     localStorage.setItem("LIST", JSON.stringify(items))
   }, [items])
 
-
   return (
     <div>
       <React.Fragment>
@@ -269,11 +267,11 @@ theme: 'colored'
                 else{
                   return null;
                 }
-              }).map((element, index) => (
+              }).reverse().map((element, index) => (
                 <div key={element.id} style={{ marginBottom: "2px", borderBottom: "2px solid rgb(231, 231, 231)" }}>
                   <React.Fragment>
                     <ListItem>
-                      <Typography>{index + 1}</Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      <Typography>{items.length-index}</Typography>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                       <ListItemText primary={element.title} secondary={element.description} />
                       &nbsp;&nbsp;&nbsp;
                         <i className="fas fa-edit" style={{fontSize: "20px"}} onClick={() => handleClickEditOpen(element.id)} />
@@ -295,7 +293,6 @@ theme: 'colored'
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                           />
-                          <br /><br />
                           <TextField
                           autoComplete="off"
                             margin="dense"
@@ -343,7 +340,6 @@ theme: 'colored'
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
-                <br /><br /><br />
                 <TextField
                 autoComplete="off"
                   margin="dense"
